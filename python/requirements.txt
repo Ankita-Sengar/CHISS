@@ -1,0 +1,4 @@
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+# optional, for --impl matlab:  matlabengine (matching your MATLAB release, e.g. matlabengine==25.1.* for R2025a)
