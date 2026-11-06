@@ -1,23 +1,16 @@
 # CHISS — Clean Hyperspherical Inter-Sample Similarity oversampling
 
-Reference implementations (MATLAB and Python) of the CHISS oversampling algorithm for imbalanced
-binary classification.
+MATLAB and Python implementations of CHISS for binary imbalanced classification.
 
-CHISS constructs anchor-centred hyperspheres around minority samples, admits only those whose
-neighbourhood is sufficiently clean, and samples uniformly inside the admissible region, filtering
-each candidate for overlap with the majority class and for duplication of existing samples.
+CHISS generates minority samples inside locally admissible hyperspheres. Neighbourhood
+information determines the sampling radii; overlap and duplicate checks filter the
+generated candidates.
 
-- Severity-aware synthetic target `theta(Delta_G)` and resulting budget `n_syn`
-- Global and local neighbourhood sizes `K_D`, `K_L`, `K_F`, derived from the global and local
-  imbalance ratios
-- Admissible anchor-centred hyperspheres: a radius is admissible when its ball contains at most
-  `n_maj_max` majority samples
-- Uniform sampling inside L1 hyperspheres, with overlap (`tau_overlap`) and duplication
-  (`delta_dup`) checks applied per candidate
-- One attempt per required sample (`n_ind = ceil(n_syn / |X_min|)` per anchor); an admissible
-  anchor–radius pair remains available after use, and rejected candidates are not replaced
-- Generation stops once the global budget `n_syn` is reached; there is no quota reallocation, so
-  the number generated may fall short of the budget but never exceeds it
+The implementation derives its neighbourhood sizes from the imbalance ratios and uses
+a severity-dependent synthetic-sample budget. Sampling uses L1 hyperspheres by default.
+Each minority anchor makes `ceil(n_syn / n_min)` attempts, subject to the global budget;
+rejected samples are not retried or reallocated. As a result, the accepted count can
+be below the requested count.
 
 Default parameters: `K0 = 9`, `Khat0 = 7`, `a = 10`, `b = 0.01`, `n_maj_max = 1`,
 `tau_overlap = 0.5`, `delta_dup = 0.005`, L1 distance.
