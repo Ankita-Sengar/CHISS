@@ -1,6 +1,6 @@
 # CHISS — Clean Hyperspherical Inter-Sample Similarity oversampling
 
-MATLAB and Python implementations of CHISS for binary imbalanced classification.
+Python implementation of CHISS for binary imbalanced classification.
 
 CHISS generates minority samples inside locally admissible hyperspheres. Neighbourhood
 information determines the sampling radii; overlap and duplicate checks filter the
@@ -35,22 +35,13 @@ python python/scripts/example.py
 `python/scripts/run_chiss_cv.py` runs CHISS under stratified k-fold cross-validation, fitting the
 scaler and applying oversampling within the training folds only.
 
-## MATLAB
-
-```matlab
-rng(28);
-[Xsyn, balanced, ysyn, stats] = CHISS(Xtrain_scaled, ytrain, minorityLabel);     % defaults
-[Xsyn, ~, ~, stats] = CHISS(Xtrain_scaled, ytrain, minorityLabel, 'nMajMax', 2); % options
-```
-
 ## Notes
 
 Inputs should be scaled before use — for example min-max scaling fitted on the training data — as
 the duplication threshold `delta_dup` is an absolute distance.
 
-Both implementations return a `stats` structure recording the requested and accepted counts, the
-derived neighbourhood size, the number of admissible anchors, and the number of candidates
-rejected by each filter.
+The implementation records the requested and accepted sample counts, neighbourhood size,
+admissible anchors, and candidates rejected by each filter.
 
 Baseline methods used for comparison in the accompanying work are not redistributed here; they are
 available from their original sources.
