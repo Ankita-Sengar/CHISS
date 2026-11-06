@@ -1,11 +1,11 @@
-"""Leakage-free stratified 10-fold CV of CHISS (Section 4.4 protocol).
+"""Stratified 10-fold evaluation of CHISS.
 
-  python run_chiss_cv.py --data E:\\path\\to\\csvs --seeds 28,42 --impl python
-  python run_chiss_cv.py --data ... --impl matlab --matlab-dir ..\\..\\matlab     (MATLAB Engine for Python)
+The min-max scaling parameters are estimated from each training fold.
+Oversampling is performed on that fold before classifier fitting;
+the test fold is used only for evaluation.
 
-Per fold: min-max scaler fitted on the training folds only; CHISS applied to the scaled
-training folds only; classifiers trained on the oversampled training folds and evaluated
-on the untouched test fold. Writes one row per dataset/seed/fold/classifier.
+Example:
+  python run_chiss_cv.py --data /path/to/csvs --seeds 28,42 --impl python
 """
 import os, sys, argparse, time, numpy as np, pandas as pd, warnings
 from sklearn.model_selection import StratifiedKFold
