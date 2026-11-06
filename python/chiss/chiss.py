@@ -1,10 +1,8 @@
-"""CHISS: Clean Hyperspherical Inter-Sample Similarity oversampling (Algorithm 1).
+"""CHISS oversampling for binary imbalanced data.
 
-Generation: for every minority anchor, n_ind = ceil(n_syn / |X_min|) candidates are drawn
-(one attempt per required sample). Each candidate uses an anchor-radius pair chosen
-uniformly at random from the admissible set Q_i; pairs are not removed after use
-(pair reuse). Candidates failing the overlap or duplication check are not replaced.
-Generation stops when n_syn is reached. No fallbacks, target forcing or quota reallocation.
+Each minority anchor makes a fixed number of sampling attempts using its
+admissible radii. Candidates must pass both overlap and duplicate checks.
+The accepted sample count can be lower than the requested budget.
 """
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
@@ -15,10 +13,10 @@ _EPS = 2.220446049250313e-16
 def chiss_oversample(X, y, minority_label=None, K0=9, Khat0=7, a=10, b=0.01, n_maj_max=1,
                      tau_overlap=0.5, delta_dup=0.005, distance='l1', target='default',
                      random_state=None, return_stats=False):
-    """Return the synthetic minority samples (m x d) for the training data (X, y).
+    """Generate synthetic minority samples from scaled binary training data.
 
-    X should be scaled (e.g. min-max fitted on the training data). y is binary.
-    random_state: int, None or numpy Generator.
+    Scale X using training data only. random_state accepts an integer,
+    None, or a NumPy Generator.
     """
     rng = random_state if isinstance(random_state, np.random.Generator) else np.random.default_rng(random_state)
     X = np.asarray(X, dtype=float); y = np.asarray(y).ravel()
@@ -75,7 +73,7 @@ def chiss_oversample(X, y, minority_label=None, K0=9, Khat0=7, a=10, b=0.01, n_m
         for _ in range(n_ind):                                               # Lines 17-33
             if n_good >= n_syn:
                 break
-            rc = Q[rng.integers(len(Q))]                                     # pair stays in Q (reuse)
+            rc = Q[rng.integers(len(Q))]                                     # sample radius with replacement
             if distance == 'l1':
                 e = -np.log(rng.random(d)); v = np.where(rng.random(d) > 0.5, 1., -1.) * e / e.sum()
             else:
