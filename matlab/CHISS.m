@@ -19,13 +19,10 @@ function [syntheticData, balancedData, syntheticLabels, stats] = CHISS(X, y, min
 %     'distance'    'l1'     'l1' or 'l2'
 %     'target'      'default' 'default' (Eq. 3), 'full' (theta = 1) or 'conservative'
 %
-%   Generation (Algorithm 1, Lines 18-35): for every minority anchor, n_ind = ceil(n_syn / |X_min|)
-%   candidates are drawn (one attempt per required sample). Each candidate uses an
-%   anchor-radius pair chosen uniformly at random from the admissible set Q_i; pairs are
-%   NOT removed after use (pair reuse). A candidate is kept only if it passes the overlap
-%   and duplication checks; rejected candidates are not replaced. Generation stops when
-%   the global target n_syn is reached. No fallbacks, no target forcing, no quota
-%   reallocation. Randomness comes from MATLAB's global stream (set it with rng(seed)).
+%   Each minority anchor makes ceil(nSyn/nMin) sampling attempts using
+%   admissible radii selected with replacement. Candidates failing the
+%   overlap or duplication checks are discarded. The total accepted
+%   count may be less than nSyn. Set rng(seed) for reproducible runs.
 %
 %   Outputs
 %     syntheticData    m x d synthetic minority samples (m <= n_syn)
@@ -106,7 +103,7 @@ function [syntheticData, balancedData, syntheticLabels, stats] = CHISS(X, y, min
         xc = Xmin(i, :);
         for t = 1:nInd                                            % Line 19: n_ind attempts (Line 18: Q_i non-empty)
             if nGood >= nSyn, break; end
-            rc = Q(randi(numel(Q)));                              % Line 20: random pair; retained in Q (Line 34)
+            rc = Q(randi(numel(Q)));                              % Line 20: sample radius with replacement
             xs = xc + rc * rand()^(1 / d) * unitDirection(d, o.distance);
             [~, dMin] = knnsearch(NSmin, xs);
             [~, dMaj] = knnsearch(NSmaj, xs);
